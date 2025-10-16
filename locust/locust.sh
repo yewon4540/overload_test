@@ -17,20 +17,28 @@ RESULT_CSV="${OUTPUT_DIR}/locust_result_${TIMESTAMP}.csv"
 mkdir -p $OUTPUT_DIR
 
 echo "[*] Locust 부하테스트 시작..."
-locust -f scenario/locustfile.py --headless --host=$HOST -u 20 -r 5 -t 1m \
+locust -f scenario/locustfile.py --headless --host=$HOST \
+    -u 100 -r 5 -t 10m \
+    --step-load --step-users 10 --step-time 30s \
     --csv=${OUTPUT_DIR}/locust_result_${TIMESTAMP} > /dev/null 2>&1
-
+locust -f scenario/locustfile.py --headless --host=http://localhost:5001 -u 5 -r 2 -t 10s --csv=result/test
 # HTML 리포트 생성 (CSV → HTML)
 python3 - <<'EOF'
-import pandas as pd, matplotlib.pyplot as plt, seaborn as sns, os
-import glob
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns, os, glob
 
-result_files = sorted(glob.glob("result/locust_result_*_stats.csv"))
+result_files = sorted(glob.glob("result/*_stats.csv"))
 if not result_files:
+    print("[!] 결과 파일을 찾을 수 없습니다.")
     exit()
 
-df = pd.read_csv(result_files[-1])
+latest_file = result_files[-1]
+print(f"[*] 분석 중: {latest_file}")
+
+df = pd.read_csv(latest_file)
 summary = df[["Name", "Requests/s", "Median Response Time", "Failure Count"]]
+print("\n[요약 결과]")
 print(summary)
 
 plt.figure(figsize=(8, 5))
@@ -38,7 +46,11 @@ sns.barplot(data=summary, x="Name", y="Requests/s")
 plt.xticks(rotation=45)
 plt.title("Requests per second by Endpoint")
 plt.tight_layout()
-plt.savefig(os.path.join("result", "locust_graph.png"))
+
+output_path = os.path.join("result", "locust_graph.png")
+plt.savefig(output_path)
+print(f"[✔] 그래프 저장 완료: {output_path}")
+
 EOF
 
 echo "[✔] 결과 저장 위치: ${RESULT_CSV}, ${RESULT_HTML}"
