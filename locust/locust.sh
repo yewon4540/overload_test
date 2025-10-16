@@ -21,7 +21,7 @@ locust -f scenario/locustfile.py --headless --host=$HOST \
     -u 100 -r 5 -t 10m \
     --step-load --step-users 10 --step-time 30s \
     --csv=${OUTPUT_DIR}/locust_result_${TIMESTAMP} > /dev/null 2>&1
-locust -f scenario/locustfile.py --headless --host=http://localhost:5001 -u 5 -r 2 -t 10s --csv=result/test
+
 # HTML 리포트 생성 (CSV → HTML)
 python3 - <<'EOF'
 import pandas as pd
