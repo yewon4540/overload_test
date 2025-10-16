@@ -1,5 +1,5 @@
 # overload_test
-[블로그 링크](https://yedong4540.tistory.com/10)
+<a href="https://github.com/yewon4540/overload_test?tab=readme-ov-file#%EA%B0%9C%EB%85%90" target="_blank">깃허브 링크</a>
 
 ## 프로젝트 구조
 ```
