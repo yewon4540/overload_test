@@ -1,0 +1,1 @@
+locust -f scenario/locustfile.py --host=http://localhost:5001
